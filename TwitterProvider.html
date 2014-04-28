@@ -1,0 +1,490 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>F# Data Toolbox: Twitter type provider
+</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="F# Data-based library for various data access APIs">
+    <meta name="author" content="Evelina Gabasova">
+
+    <script src="http://code.jquery.com/jquery-1.8.0.js"></script>
+    <script src="http://code.jquery.com/ui/1.8.23/jquery-ui.js"></script>
+    <script src="http://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.1/js/bootstrap.min.js"></script>
+    <link href="http://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.1/css/bootstrap-combined.min.css" rel="stylesheet">
+
+    <link type="text/css" rel="stylesheet" href="/FSharp.Data.Toolbox/content/style.css" />
+    <script type="text/javascript" src="/FSharp.Data.Toolbox/content/tips.js"></script>
+    <!-- HTML5 shim, for IE6-8 support of HTML5 elements -->
+    <!--[if lt IE 9]>
+      <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+  </head>
+  <body>
+    <div class="container"> 
+      <div class="masthead">
+        <ul class="nav nav-pills pull-right">
+          <li><a href="http://fsharp.github.io/FSharp.Data"><img height="16" width="16" src="http://fsharp.org/images/thumbs/FSharp.Data.png" /> F# Data</a></li>
+          <li><a href="http://bluemountaincapital.github.io/Deedle"><img height="16" width="16" src="http://fsharp.org/images/thumbs/Deedle.png" /> Deedle</a></li>
+          <li><a href="http://bluemountaincapital.github.io/FSharpRProvider"><img height=" 16" width="16" src="http://fsharp.org/images/thumbs/FSharpRProvider.png" /> R Provider</a></li>
+          <li><a href="http://fsharp.github.io/FSharp.Charting/"><img height="16" width="16" src="http://fsharp.org/images/thumbs/FSharp.Charting.png" /> F# Charting</a></li>
+        </ul>
+        <h3 class="muted"><a href="/FSharp.Data.Toolbox/index.html">F# Data Toolbox</a></h3>
+      </div>
+      <hr />
+      <div class="row">
+        <div class="span9" id="main">
+          
+<h1>F# Data Toolbox: Twitter type provider</h1>
+
+<p>The Twitter type provider makes Twitter data easily accessible 
+by providing a light wrapper around the Twitter API.</p>
+
+<h2>Connecting to Twitter</h2>
+
+<p>Twitter requires developers to register their applications to gain access
+to its API. You have to register your application at
+<a href="https://apps.twitter.com/">Twitter Apps</a>. 
+After registration, Twitter provides API key and API secret
+ to authenticate the application.</p>
+
+<table class="pre"><tr><td class="lines"><pre class="fssnip">
+<span class="l">1: </span>
+<span class="l">2: </span>
+<span class="l">3: </span>
+<span class="l">4: </span>
+<span class="l">5: </span>
+<span class="l">6: </span>
+</pre>
+</td>
+<td class="snippet"><pre class="fssnip">
+<span class="prep">#r</span> <span class="s">&quot;</span><span class="s">FSharp</span><span class="s">.</span><span class="s">Data</span><span class="s">.</span><span class="s">dll</span><span class="s">&quot;</span>
+<span class="prep">#r</span> <span class="s">&quot;</span><span class="s">FSharp</span><span class="s">.</span><span class="s">Data</span><span class="s">.</span><span class="s">Toolbox</span><span class="s">.</span><span class="s">Twitter</span><span class="s">.</span><span class="s">dll</span><span class="s">&quot;</span>
+<span class="k">open</span> <span onmouseout="hideTip(event, 'fs1', 1)" onmouseover="showTip(event, 'fs1', 1)" class="i">FSharp</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs2', 2)" onmouseover="showTip(event, 'fs2', 2)" class="i">Data</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs3', 3)" onmouseover="showTip(event, 'fs3', 3)" class="i">Toolbox</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs4', 4)" onmouseover="showTip(event, 'fs4', 4)" class="i">Twitter</span>
+
+<span class="k">let</span> <span onmouseout="hideTip(event, 'fs5', 5)" onmouseover="showTip(event, 'fs5', 5)" class="i">key</span> <span class="o">=</span> <span class="s">&quot;</span><span class="s">mKQL29XNemjQbLlQ8t0pBg</span><span class="s">&quot;</span>
+<span class="k">let</span> <span onmouseout="hideTip(event, 'fs6', 6)" onmouseover="showTip(event, 'fs6', 6)" class="i">secret</span> <span class="o">=</span> <span class="s">&quot;</span><span class="s">T27HLDve1lumQykBUgYAbcEkbDrjBe6gwbu0gqi4saM</span><span class="s">&quot;</span></pre>
+</td>
+</tr>
+</table>
+
+<p>There are two types of possible connections to Twitter,
+application-only and full OAuth authentication. They provide 
+different access rights and different number of <a href="https://dev.twitter.com/docs/rate-limiting/1.1/limits">allowed requests
+per time window</a>.</p>
+
+<h3>Connecting with application-only authentication</h3>
+
+<p>The <a href="https://dev.twitter.com/docs/auth/application-only-auth">application-only authentication</a>
+ provides access that's 
+limited to data reachable without the full user context.
+For example, it allows accessing friends and followers and searching
+in tweets.
+This is how the application obtains acess credentials:</p>
+
+<table class="pre"><tr><td class="lines"><pre class="fssnip">
+<span class="l">1: </span>
+</pre>
+</td>
+<td class="snippet"><pre class="fssnip">
+<span class="k">let</span> <span onmouseout="hideTip(event, 'fs7', 7)" onmouseover="showTip(event, 'fs7', 7)" class="i">twitter</span> <span class="o">=</span> <span onmouseout="hideTip(event, 'fs8', 8)" onmouseover="showTip(event, 'fs8', 8)" class="i">Twitter</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs9', 9)" onmouseover="showTip(event, 'fs9', 9)" class="i">AuthenticateAppOnly</span>(<span onmouseout="hideTip(event, 'fs5', 10)" onmouseover="showTip(event, 'fs5', 10)" class="i">key</span>, <span onmouseout="hideTip(event, 'fs6', 11)" onmouseover="showTip(event, 'fs6', 11)" class="i">secret</span>)</pre>
+</td>
+</tr>
+</table>
+
+<h3>Connecting with OAuth</h3>
+
+<p>This method of access provides full user context for the application. 
+Compared to application-only access, it can also access Streaming, 
+search for users and post tweets on behalf of the user.</p>
+
+<p>To connect with OAuth, we first create a Twitter connector.
+with your user name and password. You'll get a PIN that you 
+use as an argument for the Connect function. This user authentication
+allows full access to Twitter APIs.</p>
+
+<table class="pre"><tr><td class="lines"><pre class="fssnip">
+<span class="l">1: </span>
+<span class="l">2: </span>
+<span class="l">3: </span>
+<span class="l">4: </span>
+</pre>
+</td>
+<td class="snippet"><pre class="fssnip">
+<span class="k">let</span> <span onmouseout="hideTip(event, 'fs10', 12)" onmouseover="showTip(event, 'fs10', 12)" class="i">connector</span> <span class="o">=</span> <span onmouseout="hideTip(event, 'fs8', 13)" onmouseover="showTip(event, 'fs8', 13)" class="i">Twitter</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs11', 14)" onmouseover="showTip(event, 'fs11', 14)" class="i">Authenticate</span>(<span onmouseout="hideTip(event, 'fs5', 15)" onmouseover="showTip(event, 'fs5', 15)" class="i">key</span>, <span onmouseout="hideTip(event, 'fs6', 16)" onmouseover="showTip(event, 'fs6', 16)" class="i">secret</span>) 
+
+<span class="c">// Run this part after you obtain PIN</span>
+<span class="k">let</span> <span onmouseout="hideTip(event, 'fs7', 17)" onmouseover="showTip(event, 'fs7', 17)" class="i">twitter</span> <span class="o">=</span> <span onmouseout="hideTip(event, 'fs10', 18)" onmouseover="showTip(event, 'fs10', 18)" class="i">connector</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs12', 19)" onmouseover="showTip(event, 'fs12', 19)" class="i">Connect</span>(<span class="s">&quot;</span><span class="s">7808652</span><span class="s">&quot;</span>)</pre>
+</td>
+</tr>
+</table>
+
+<p><img src="img/OAuthWindow.png" alt="Twitter login window" /></p>
+
+<p>After connecting to Twitter, you can call methods to access 
+Twitter users, list followers and friends, search for tweets and
+access the global Twitter stream. All the methods send http requests
+to Twitter and return JSON documents. They are parsed using JSON
+type provider, which allows to access individual properties.</p>
+
+<h2>Accessing friends and followers</h2>
+
+<p>The following examples show how to access lists of followers
+and friends (followed accounts). Users can be identified either
+by their Twitter name, or by their user ID number.</p>
+
+<table class="pre"><tr><td class="lines"><pre class="fssnip">
+<span class="l"> 1: </span>
+<span class="l"> 2: </span>
+<span class="l"> 3: </span>
+<span class="l"> 4: </span>
+<span class="l"> 5: </span>
+<span class="l"> 6: </span>
+<span class="l"> 7: </span>
+<span class="l"> 8: </span>
+<span class="l"> 9: </span>
+<span class="l">10: </span>
+<span class="l">11: </span>
+<span class="l">12: </span>
+<span class="l">13: </span>
+<span class="l">14: </span>
+<span class="l">15: </span>
+<span class="l">16: </span>
+<span class="l">17: </span>
+<span class="l">18: </span>
+</pre>
+</td>
+<td class="snippet"><pre class="fssnip">
+<span class="c">// Get a list of ID numbers of friends and followers </span>
+<span class="c">// for the current signed-in user</span>
+<span class="c">// (requires full authentication)</span>
+<span class="k">let</span> <span onmouseout="hideTip(event, 'fs13', 20)" onmouseover="showTip(event, 'fs13', 20)" class="i">friends</span> <span class="o">=</span> <span onmouseout="hideTip(event, 'fs7', 21)" onmouseover="showTip(event, 'fs7', 21)" class="i">twitter</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs14', 22)" onmouseover="showTip(event, 'fs14', 22)" class="i">Connections</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs15', 23)" onmouseover="showTip(event, 'fs15', 23)" class="i">FriendsIds</span>()
+<span class="k">let</span> <span onmouseout="hideTip(event, 'fs16', 24)" onmouseover="showTip(event, 'fs16', 24)" class="i">followers</span> <span class="o">=</span> <span onmouseout="hideTip(event, 'fs7', 25)" onmouseover="showTip(event, 'fs7', 25)" class="i">twitter</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs14', 26)" onmouseover="showTip(event, 'fs14', 26)" class="i">Connections</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs17', 27)" onmouseover="showTip(event, 'fs17', 27)" class="i">FollowerIds</span>()
+<span onmouseout="hideTip(event, 'fs18', 28)" onmouseover="showTip(event, 'fs18', 28)" class="i">printfn</span> <span class="s">&quot;</span><span class="s">Number</span><span class="s"> </span><span class="s">of</span><span class="s"> </span><span class="s">friends</span><span class="s">:</span><span class="s"> </span><span class="s">%</span><span class="s">d</span><span class="s">&quot;</span> (<span onmouseout="hideTip(event, 'fs13', 29)" onmouseover="showTip(event, 'fs13', 29)" class="i">friends</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs19', 30)" onmouseover="showTip(event, 'fs19', 30)" class="i">Ids</span> <span class="o">|&gt;</span> <span onmouseout="hideTip(event, 'fs20', 31)" onmouseover="showTip(event, 'fs20', 31)" class="i">Seq</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs21', 32)" onmouseover="showTip(event, 'fs21', 32)" class="i">length</span>)
+<span onmouseout="hideTip(event, 'fs18', 33)" onmouseover="showTip(event, 'fs18', 33)" class="i">printfn</span> <span class="s">&quot;</span><span class="s">Number</span><span class="s"> </span><span class="s">of</span><span class="s"> </span><span class="s">followers</span><span class="s">:</span><span class="s"> </span><span class="s">%</span><span class="s">d</span><span class="s">&quot;</span> (<span onmouseout="hideTip(event, 'fs16', 34)" onmouseover="showTip(event, 'fs16', 34)" class="i">followers</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs19', 35)" onmouseover="showTip(event, 'fs19', 35)" class="i">Ids</span> <span class="o">|&gt;</span> <span onmouseout="hideTip(event, 'fs20', 36)" onmouseover="showTip(event, 'fs20', 36)" class="i">Seq</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs21', 37)" onmouseover="showTip(event, 'fs21', 37)" class="i">length</span>)
+
+<span class="c">// Get a list IDs of friends and followers for a specific user </span>
+<span class="k">let</span> <span onmouseout="hideTip(event, 'fs22', 38)" onmouseover="showTip(event, 'fs22', 38)" class="i">followersFSorg</span> <span class="o">=</span> <span onmouseout="hideTip(event, 'fs7', 39)" onmouseover="showTip(event, 'fs7', 39)" class="i">twitter</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs14', 40)" onmouseover="showTip(event, 'fs14', 40)" class="i">Connections</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs15', 41)" onmouseover="showTip(event, 'fs15', 41)" class="i">FriendsIds</span>(<span class="i">userId</span><span class="o">=</span><span class="n">880772426L</span>)
+<span class="k">let</span> <span onmouseout="hideTip(event, 'fs23', 42)" onmouseover="showTip(event, 'fs23', 42)" class="i">friendsFSorg</span> <span class="o">=</span> <span onmouseout="hideTip(event, 'fs7', 43)" onmouseover="showTip(event, 'fs7', 43)" class="i">twitter</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs14', 44)" onmouseover="showTip(event, 'fs14', 44)" class="i">Connections</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs17', 45)" onmouseover="showTip(event, 'fs17', 45)" class="i">FollowerIds</span>(<span class="i">screenName</span><span class="o">=</span><span class="s">&quot;</span><span class="s">fsharporg</span><span class="s">&quot;</span>)
+
+<span class="c">// Get information about connection between specific users</span>
+<span class="k">let</span> <span onmouseout="hideTip(event, 'fs24', 46)" onmouseover="showTip(event, 'fs24', 46)" class="i">fs</span> <span class="o">=</span> <span onmouseout="hideTip(event, 'fs7', 47)" onmouseover="showTip(event, 'fs7', 47)" class="i">twitter</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs14', 48)" onmouseover="showTip(event, 'fs14', 48)" class="i">Connections</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs25', 49)" onmouseover="showTip(event, 'fs25', 49)" class="i">Friendship</span>(<span class="n">880772426L</span>, <span class="n">94144339L</span>)
+<span onmouseout="hideTip(event, 'fs24', 50)" onmouseover="showTip(event, 'fs24', 50)" class="i">fs</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs26', 51)" onmouseover="showTip(event, 'fs26', 51)" class="i">Relationship</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs27', 52)" onmouseover="showTip(event, 'fs27', 52)" class="i">Source</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs28', 53)" onmouseover="showTip(event, 'fs28', 53)" class="i">ScreenName</span>
+<span onmouseout="hideTip(event, 'fs24', 54)" onmouseover="showTip(event, 'fs24', 54)" class="i">fs</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs26', 55)" onmouseover="showTip(event, 'fs26', 55)" class="i">Relationship</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs29', 56)" onmouseover="showTip(event, 'fs29', 56)" class="i">Target</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs30', 57)" onmouseover="showTip(event, 'fs30', 57)" class="i">ScreenName</span>
+<span onmouseout="hideTip(event, 'fs24', 58)" onmouseover="showTip(event, 'fs24', 58)" class="i">fs</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs26', 59)" onmouseover="showTip(event, 'fs26', 59)" class="i">Relationship</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs27', 60)" onmouseover="showTip(event, 'fs27', 60)" class="i">Source</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs31', 61)" onmouseover="showTip(event, 'fs31', 61)" class="i">Following</span>
+<span onmouseout="hideTip(event, 'fs24', 62)" onmouseover="showTip(event, 'fs24', 62)" class="i">fs</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs26', 63)" onmouseover="showTip(event, 'fs26', 63)" class="i">Relationship</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs27', 64)" onmouseover="showTip(event, 'fs27', 64)" class="i">Source</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs32', 65)" onmouseover="showTip(event, 'fs32', 65)" class="i">FollowedBy</span></pre>
+</td>
+</tr>
+</table>
+
+<p>We can also search for information about a list of users, specified 
+either by IDs or by their screen names. It's possible to search for
+up to 100 users at a time.</p>
+
+<table class="pre"><tr><td class="lines"><pre class="fssnip">
+<span class="l">1: </span>
+<span class="l">2: </span>
+<span class="l">3: </span>
+</pre>
+</td>
+<td class="snippet"><pre class="fssnip">
+<span class="k">let</span> <span onmouseout="hideTip(event, 'fs33', 66)" onmouseover="showTip(event, 'fs33', 66)" class="i">friendInfos</span> <span class="o">=</span> <span onmouseout="hideTip(event, 'fs7', 67)" onmouseover="showTip(event, 'fs7', 67)" class="i">twitter</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs34', 68)" onmouseover="showTip(event, 'fs34', 68)" class="i">Users</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs35', 69)" onmouseover="showTip(event, 'fs35', 69)" class="i">Lookup</span>(<span onmouseout="hideTip(event, 'fs13', 70)" onmouseover="showTip(event, 'fs13', 70)" class="i">friends</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs19', 71)" onmouseover="showTip(event, 'fs19', 71)" class="i">Ids</span> <span class="o">|&gt;</span> <span onmouseout="hideTip(event, 'fs20', 72)" onmouseover="showTip(event, 'fs20', 72)" class="i">Seq</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs36', 73)" onmouseover="showTip(event, 'fs36', 73)" class="i">truncate</span> <span class="n">100</span>)
+<span class="k">for</span> <span onmouseout="hideTip(event, 'fs37', 74)" onmouseover="showTip(event, 'fs37', 74)" class="i">friend</span> <span class="k">in</span> <span onmouseout="hideTip(event, 'fs33', 75)" onmouseover="showTip(event, 'fs33', 75)" class="i">friendInfos</span> <span class="k">do</span>
+  <span onmouseout="hideTip(event, 'fs18', 76)" onmouseover="showTip(event, 'fs18', 76)" class="i">printfn</span> <span class="s">&quot;</span><span class="s">%</span><span class="s">s</span><span class="s"> </span><span class="s">(</span><span class="s">@</span><span class="s">%</span><span class="s">s</span><span class="s">)</span><span class="s">\t</span><span class="s">\t</span><span class="s">%</span><span class="s">d</span><span class="s">&quot;</span> <span onmouseout="hideTip(event, 'fs37', 77)" onmouseover="showTip(event, 'fs37', 77)" class="i">friend</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs38', 78)" onmouseover="showTip(event, 'fs38', 78)" class="i">Name</span> <span onmouseout="hideTip(event, 'fs37', 79)" onmouseover="showTip(event, 'fs37', 79)" class="i">friend</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs39', 80)" onmouseover="showTip(event, 'fs39', 80)" class="i">ScreenName</span> <span onmouseout="hideTip(event, 'fs37', 81)" onmouseover="showTip(event, 'fs37', 81)" class="i">friend</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs40', 82)" onmouseover="showTip(event, 'fs40', 82)" class="i">Id</span></pre>
+</td>
+</tr>
+</table>
+
+<h2>Searching for tweets</h2>
+
+<p>We can search Twitter for tweets using keywords. The following snippet shows
+how to search for tweets containing the #fsharp tag.</p>
+
+<table class="pre"><tr><td class="lines"><pre class="fssnip">
+<span class="l">1: </span>
+<span class="l">2: </span>
+<span class="l">3: </span>
+<span class="l">4: </span>
+<span class="l">5: </span>
+</pre>
+</td>
+<td class="snippet"><pre class="fssnip">
+<span class="k">let</span> <span onmouseout="hideTip(event, 'fs41', 83)" onmouseover="showTip(event, 'fs41', 83)" class="i">fsharpTweets</span> <span class="o">=</span> <span onmouseout="hideTip(event, 'fs7', 84)" onmouseover="showTip(event, 'fs7', 84)" class="i">twitter</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs42', 85)" onmouseover="showTip(event, 'fs42', 85)" class="i">Search</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs43', 86)" onmouseover="showTip(event, 'fs43', 86)" class="i">Tweets</span>(<span class="s">&quot;</span><span class="s">#</span><span class="s">fsharp</span><span class="s">&quot;</span>, <span class="i">count</span><span class="o">=</span><span class="n">100</span>)
+
+<span class="k">for</span> <span onmouseout="hideTip(event, 'fs44', 87)" onmouseover="showTip(event, 'fs44', 87)" class="i">status</span> <span class="k">in</span> <span onmouseout="hideTip(event, 'fs41', 88)" onmouseover="showTip(event, 'fs41', 88)" class="i">fsharpTweets</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs45', 89)" onmouseover="showTip(event, 'fs45', 89)" class="i">Statuses</span> <span class="k">do</span>
+  <span onmouseout="hideTip(event, 'fs18', 90)" onmouseover="showTip(event, 'fs18', 90)" class="i">printfn</span> <span class="s">&quot;</span><span class="s">@</span><span class="s">%</span><span class="s">s</span><span class="s">:</span><span class="s"> </span><span class="s">%</span><span class="s">s</span><span class="s">&quot;</span> <span onmouseout="hideTip(event, 'fs44', 91)" onmouseover="showTip(event, 'fs44', 91)" class="i">status</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs46', 92)" onmouseover="showTip(event, 'fs46', 92)" class="i">User</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs47', 93)" onmouseover="showTip(event, 'fs47', 93)" class="i">ScreenName</span> <span onmouseout="hideTip(event, 'fs44', 94)" onmouseover="showTip(event, 'fs44', 94)" class="i">status</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs48', 95)" onmouseover="showTip(event, 'fs48', 95)" class="i">Text</span>
+  </pre>
+</td>
+</tr>
+</table>
+
+<h2>Accessing timelines</h2>
+
+<p>Let's look at how to access Twitter timelines. Timelines show a stream
+of tweets from followed accounts.</p>
+
+<p>We can access timelines for specific users, or the home timeline
+of the current signed-in user.</p>
+
+<table class="pre"><tr><td class="lines"><pre class="fssnip">
+<span class="l">1: </span>
+<span class="l">2: </span>
+<span class="l">3: </span>
+<span class="l">4: </span>
+<span class="l">5: </span>
+<span class="l">6: </span>
+</pre>
+</td>
+<td class="snippet"><pre class="fssnip">
+<span class="c">// Access home timeline</span>
+<span class="c">// (requires full user authentication)</span>
+<span class="k">let</span> <span onmouseout="hideTip(event, 'fs49', 96)" onmouseover="showTip(event, 'fs49', 96)" class="i">home</span> <span class="o">=</span> <span onmouseout="hideTip(event, 'fs7', 97)" onmouseover="showTip(event, 'fs7', 97)" class="i">twitter</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs50', 98)" onmouseover="showTip(event, 'fs50', 98)" class="i">Timelines</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs51', 99)" onmouseover="showTip(event, 'fs51', 99)" class="i">HomeTimeline</span>()
+
+<span class="c">// Timeline of a specific user, up to a specified number of tweets</span>
+<span class="k">let</span> <span onmouseout="hideTip(event, 'fs52', 100)" onmouseover="showTip(event, 'fs52', 100)" class="i">timeline</span> <span class="o">=</span> <span onmouseout="hideTip(event, 'fs7', 101)" onmouseover="showTip(event, 'fs7', 101)" class="i">twitter</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs50', 102)" onmouseover="showTip(event, 'fs50', 102)" class="i">Timelines</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs53', 103)" onmouseover="showTip(event, 'fs53', 103)" class="i">Timeline</span>(<span class="s">&quot;</span><span class="s">fsharporg</span><span class="s">&quot;</span>, <span class="n">10</span>)</pre>
+</td>
+</tr>
+</table>
+
+<p>We can display the Timeline in a web browser. We first create a
+web browser window. Then we download timeline for a specific user,
+in this case it's <a href="https://twitter.com/fsharporg">@fsharporg</a>. 
+Finally, we display individual tweets in the web browser.</p>
+
+<table class="pre"><tr><td class="lines"><pre class="fssnip">
+<span class="l"> 1: </span>
+<span class="l"> 2: </span>
+<span class="l"> 3: </span>
+<span class="l"> 4: </span>
+<span class="l"> 5: </span>
+<span class="l"> 6: </span>
+<span class="l"> 7: </span>
+<span class="l"> 8: </span>
+<span class="l"> 9: </span>
+<span class="l">10: </span>
+<span class="l">11: </span>
+<span class="l">12: </span>
+<span class="l">13: </span>
+<span class="l">14: </span>
+<span class="l">15: </span>
+<span class="l">16: </span>
+</pre>
+</td>
+<td class="snippet"><pre class="fssnip">
+<span class="k">open</span> <span onmouseout="hideTip(event, 'fs54', 104)" onmouseover="showTip(event, 'fs54', 104)" class="i">System</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs55', 105)" onmouseover="showTip(event, 'fs55', 105)" class="i">Windows</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs56', 106)" onmouseover="showTip(event, 'fs56', 106)" class="i">Forms</span>
+<span class="k">open</span> <span onmouseout="hideTip(event, 'fs1', 107)" onmouseover="showTip(event, 'fs1', 107)" class="i">FSharp</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs57', 108)" onmouseover="showTip(event, 'fs57', 108)" class="i">Control</span>
+<span class="k">open</span> <span onmouseout="hideTip(event, 'fs1', 109)" onmouseover="showTip(event, 'fs1', 109)" class="i">FSharp</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs58', 110)" onmouseover="showTip(event, 'fs58', 110)" class="i">WebBrowser</span>
+
+<span class="c">// Create a windonw wtih web browser</span>
+<span class="k">let</span> <span onmouseout="hideTip(event, 'fs59', 111)" onmouseover="showTip(event, 'fs59', 111)" class="i">frm</span> <span class="o">=</span> <span class="k">new</span> <span onmouseout="hideTip(event, 'fs60', 112)" onmouseover="showTip(event, 'fs60', 112)" class="i">Form</span>(<span class="i">TopMost</span> <span class="o">=</span> <span class="k">true</span>, <span class="i">Visible</span> <span class="o">=</span> <span class="k">true</span>, <span class="i">Width</span> <span class="o">=</span> <span class="n">500</span>, <span class="i">Height</span> <span class="o">=</span> <span class="n">400</span>)
+<span class="k">let</span> <span onmouseout="hideTip(event, 'fs61', 113)" onmouseover="showTip(event, 'fs61', 113)" class="i">btn</span> <span class="o">=</span> <span class="k">new</span> <span onmouseout="hideTip(event, 'fs62', 114)" onmouseover="showTip(event, 'fs62', 114)" class="i">Button</span>(<span class="i">Text</span> <span class="o">=</span> <span class="s">&quot;</span><span class="s">Pause</span><span class="s">&quot;</span>, <span class="i">Dock</span> <span class="o">=</span> <span onmouseout="hideTip(event, 'fs63', 115)" onmouseover="showTip(event, 'fs63', 115)" class="i">DockStyle</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs64', 116)" onmouseover="showTip(event, 'fs64', 116)" class="i">Top</span>)
+<span class="k">let</span> <span onmouseout="hideTip(event, 'fs65', 117)" onmouseover="showTip(event, 'fs65', 117)" class="i">web</span> <span class="o">=</span> <span class="k">new</span> <span onmouseout="hideTip(event, 'fs66', 118)" onmouseover="showTip(event, 'fs66', 118)" class="i">WebBrowser</span>(<span class="i">Dock</span> <span class="o">=</span> <span onmouseout="hideTip(event, 'fs63', 119)" onmouseover="showTip(event, 'fs63', 119)" class="i">DockStyle</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs67', 120)" onmouseover="showTip(event, 'fs67', 120)" class="i">Fill</span>)
+<span onmouseout="hideTip(event, 'fs59', 121)" onmouseover="showTip(event, 'fs59', 121)" class="i">frm</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs68', 122)" onmouseover="showTip(event, 'fs68', 122)" class="i">Controls</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs69', 123)" onmouseover="showTip(event, 'fs69', 123)" class="i">Add</span>(<span onmouseout="hideTip(event, 'fs65', 124)" onmouseover="showTip(event, 'fs65', 124)" class="i">web</span>)
+<span onmouseout="hideTip(event, 'fs59', 125)" onmouseover="showTip(event, 'fs59', 125)" class="i">frm</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs68', 126)" onmouseover="showTip(event, 'fs68', 126)" class="i">Controls</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs69', 127)" onmouseover="showTip(event, 'fs69', 127)" class="i">Add</span>(<span onmouseout="hideTip(event, 'fs61', 128)" onmouseover="showTip(event, 'fs61', 128)" class="i">btn</span>)
+<span onmouseout="hideTip(event, 'fs65', 129)" onmouseover="showTip(event, 'fs65', 129)" class="i">web</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs70', 130)" onmouseover="showTip(event, 'fs70', 130)" class="i">Output</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs71', 131)" onmouseover="showTip(event, 'fs71', 131)" class="i">StartList</span>()
+
+<span class="c">// Display timeline</span>
+<span class="k">let</span> <span onmouseout="hideTip(event, 'fs52', 132)" onmouseover="showTip(event, 'fs52', 132)" class="i">timeline</span> <span class="o">=</span> <span onmouseout="hideTip(event, 'fs7', 133)" onmouseover="showTip(event, 'fs7', 133)" class="i">twitter</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs50', 134)" onmouseover="showTip(event, 'fs50', 134)" class="i">Timelines</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs53', 135)" onmouseover="showTip(event, 'fs53', 135)" class="i">Timeline</span>(<span class="s">&quot;</span><span class="s">fsharporg</span><span class="s">&quot;</span>)
+<span class="k">for</span> <span onmouseout="hideTip(event, 'fs72', 136)" onmouseover="showTip(event, 'fs72', 136)" class="i">tweet</span> <span class="k">in</span> <span onmouseout="hideTip(event, 'fs52', 137)" onmouseover="showTip(event, 'fs52', 137)" class="i">timeline</span> <span class="k">do</span>
+    <span onmouseout="hideTip(event, 'fs65', 138)" onmouseover="showTip(event, 'fs65', 138)" class="i">web</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs70', 139)" onmouseover="showTip(event, 'fs70', 139)" class="i">Output</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs73', 140)" onmouseover="showTip(event, 'fs73', 140)" class="i">AddItem</span> <span class="s">&quot;</span><span class="s">&lt;</span><span class="s">strong</span><span class="s">&gt;</span><span class="s">%</span><span class="s">s</span><span class="s">&lt;</span><span class="s">/</span><span class="s">strong</span><span class="s">&gt;</span><span class="s">:</span><span class="s"> </span><span class="s">%</span><span class="s">s</span><span class="s">&quot;</span> <span onmouseout="hideTip(event, 'fs72', 141)" onmouseover="showTip(event, 'fs72', 141)" class="i">tweet</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs74', 142)" onmouseover="showTip(event, 'fs74', 142)" class="i">User</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs75', 143)" onmouseover="showTip(event, 'fs75', 143)" class="i">Name</span> <span onmouseout="hideTip(event, 'fs72', 144)" onmouseover="showTip(event, 'fs72', 144)" class="i">tweet</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs76', 145)" onmouseover="showTip(event, 'fs76', 145)" class="i">Text</span></pre>
+</td>
+</tr>
+</table>
+
+<p><img src="img/timeline.png" alt="Twitter timeline" /></p>
+
+<h2>Streaming data</h2>
+
+<p>Streaming allows access to live Twitter data, as they're posted. 
+To access Streaming API, the application must have full user
+authentication.</p>
+
+<p>If we reuse the web browser window created in the previous 
+code sample, we can display a random sample of tweets in the following
+way.</p>
+
+<table class="pre"><tr><td class="lines"><pre class="fssnip">
+<span class="l"> 1: </span>
+<span class="l"> 2: </span>
+<span class="l"> 3: </span>
+<span class="l"> 4: </span>
+<span class="l"> 5: </span>
+<span class="l"> 6: </span>
+<span class="l"> 7: </span>
+<span class="l"> 8: </span>
+<span class="l"> 9: </span>
+<span class="l">10: </span>
+<span class="l">11: </span>
+<span class="l">12: </span>
+</pre>
+</td>
+<td class="snippet"><pre class="fssnip">
+<span class="c">// Display stream with live data</span>
+<span onmouseout="hideTip(event, 'fs65', 146)" onmouseover="showTip(event, 'fs65', 146)" class="i">web</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs70', 147)" onmouseover="showTip(event, 'fs70', 147)" class="i">Output</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs71', 148)" onmouseover="showTip(event, 'fs71', 148)" class="i">StartList</span>()
+
+<span class="k">let</span> <span onmouseout="hideTip(event, 'fs77', 149)" onmouseover="showTip(event, 'fs77', 149)" class="i">sample</span> <span class="o">=</span> <span onmouseout="hideTip(event, 'fs7', 150)" onmouseover="showTip(event, 'fs7', 150)" class="i">twitter</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs78', 151)" onmouseover="showTip(event, 'fs78', 151)" class="i">Streaming</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs79', 152)" onmouseover="showTip(event, 'fs79', 152)" class="i">SampleTweets</span>()
+<span onmouseout="hideTip(event, 'fs77', 153)" onmouseover="showTip(event, 'fs77', 153)" class="i">sample</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs80', 154)" onmouseover="showTip(event, 'fs80', 154)" class="i">TweetReceived</span> <span class="o">|&gt;</span> <span onmouseout="hideTip(event, 'fs81', 155)" onmouseover="showTip(event, 'fs81', 155)" class="i">Observable</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs82', 156)" onmouseover="showTip(event, 'fs82', 156)" class="i">guiSubscribe</span> (<span class="k">fun</span> <span onmouseout="hideTip(event, 'fs83', 157)" onmouseover="showTip(event, 'fs83', 157)" class="i">status</span> <span class="k">-&gt;</span>
+    <span class="k">match</span> <span onmouseout="hideTip(event, 'fs83', 158)" onmouseover="showTip(event, 'fs83', 158)" class="i">status</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs84', 159)" onmouseover="showTip(event, 'fs84', 159)" class="i">Text</span>, <span onmouseout="hideTip(event, 'fs83', 160)" onmouseover="showTip(event, 'fs83', 160)" class="i">status</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs85', 161)" onmouseover="showTip(event, 'fs85', 161)" class="i">User</span> <span class="k">with</span>
+    | <span onmouseout="hideTip(event, 'fs86', 162)" onmouseover="showTip(event, 'fs86', 162)" class="i">Some</span> <span onmouseout="hideTip(event, 'fs87', 163)" onmouseover="showTip(event, 'fs87', 163)" class="i">text</span>, <span onmouseout="hideTip(event, 'fs86', 164)" onmouseover="showTip(event, 'fs86', 164)" class="i">Some</span> <span onmouseout="hideTip(event, 'fs88', 165)" onmouseover="showTip(event, 'fs88', 165)" class="i">user</span> <span class="k">-&gt;</span>
+        <span onmouseout="hideTip(event, 'fs65', 166)" onmouseover="showTip(event, 'fs65', 166)" class="i">web</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs70', 167)" onmouseover="showTip(event, 'fs70', 167)" class="i">Output</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs73', 168)" onmouseover="showTip(event, 'fs73', 168)" class="i">AddItem</span> <span class="s">&quot;</span><span class="s">&lt;</span><span class="s">strong</span><span class="s">&gt;</span><span class="s">%</span><span class="s">s</span><span class="s">&lt;</span><span class="s">/</span><span class="s">strong</span><span class="s">&gt;</span><span class="s">:</span><span class="s"> </span><span class="s">%</span><span class="s">s</span><span class="s">&quot;</span> <span onmouseout="hideTip(event, 'fs88', 169)" onmouseover="showTip(event, 'fs88', 169)" class="i">user</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs75', 170)" onmouseover="showTip(event, 'fs75', 170)" class="i">Name</span> <span class="i">text</span>
+    | _ <span class="k">-&gt;</span> ()  )
+<span onmouseout="hideTip(event, 'fs77', 171)" onmouseover="showTip(event, 'fs77', 171)" class="i">sample</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs89', 172)" onmouseover="showTip(event, 'fs89', 172)" class="i">Start</span>()
+
+<span onmouseout="hideTip(event, 'fs77', 173)" onmouseover="showTip(event, 'fs77', 173)" class="i">sample</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs90', 174)" onmouseover="showTip(event, 'fs90', 174)" class="i">Stop</span>()</pre>
+</td>
+</tr>
+</table>
+
+<p>We can also search the Twitter stream for a specific hashtag or phrase. 
+The following code will filter all tweets that contain the word "fsharp" 
+from the global stream of tweets.</p>
+
+<table class="pre"><tr><td class="lines"><pre class="fssnip">
+<span class="l"> 1: </span>
+<span class="l"> 2: </span>
+<span class="l"> 3: </span>
+<span class="l"> 4: </span>
+<span class="l"> 5: </span>
+<span class="l"> 6: </span>
+<span class="l"> 7: </span>
+<span class="l"> 8: </span>
+<span class="l"> 9: </span>
+<span class="l">10: </span>
+<span class="l">11: </span>
+<span class="l">12: </span>
+</pre>
+</td>
+<td class="snippet"><pre class="fssnip">
+<span class="c">// Display live search data </span>
+<span onmouseout="hideTip(event, 'fs65', 175)" onmouseover="showTip(event, 'fs65', 175)" class="i">web</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs70', 176)" onmouseover="showTip(event, 'fs70', 176)" class="i">Output</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs71', 177)" onmouseover="showTip(event, 'fs71', 177)" class="i">StartList</span>()
+
+<span class="k">let</span> <span onmouseout="hideTip(event, 'fs91', 178)" onmouseover="showTip(event, 'fs91', 178)" class="i">search</span> <span class="o">=</span> <span onmouseout="hideTip(event, 'fs7', 179)" onmouseover="showTip(event, 'fs7', 179)" class="i">twitter</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs78', 180)" onmouseover="showTip(event, 'fs78', 180)" class="i">Streaming</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs92', 181)" onmouseover="showTip(event, 'fs92', 181)" class="i">FilterTweets</span> [<span class="s">&quot;</span><span class="s">fsharp</span><span class="s">&quot;</span>]
+<span onmouseout="hideTip(event, 'fs91', 182)" onmouseover="showTip(event, 'fs91', 182)" class="i">search</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs80', 183)" onmouseover="showTip(event, 'fs80', 183)" class="i">TweetReceived</span> <span class="o">|&gt;</span> <span onmouseout="hideTip(event, 'fs81', 184)" onmouseover="showTip(event, 'fs81', 184)" class="i">Observable</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs82', 185)" onmouseover="showTip(event, 'fs82', 185)" class="i">guiSubscribe</span> (<span class="k">fun</span> <span onmouseout="hideTip(event, 'fs83', 186)" onmouseover="showTip(event, 'fs83', 186)" class="i">status</span> <span class="k">-&gt;</span>
+    <span class="k">match</span> <span onmouseout="hideTip(event, 'fs83', 187)" onmouseover="showTip(event, 'fs83', 187)" class="i">status</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs84', 188)" onmouseover="showTip(event, 'fs84', 188)" class="i">Text</span>, <span onmouseout="hideTip(event, 'fs83', 189)" onmouseover="showTip(event, 'fs83', 189)" class="i">status</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs85', 190)" onmouseover="showTip(event, 'fs85', 190)" class="i">User</span> <span class="k">with</span>
+    | <span onmouseout="hideTip(event, 'fs86', 191)" onmouseover="showTip(event, 'fs86', 191)" class="i">Some</span> <span onmouseout="hideTip(event, 'fs87', 192)" onmouseover="showTip(event, 'fs87', 192)" class="i">text</span>, <span onmouseout="hideTip(event, 'fs86', 193)" onmouseover="showTip(event, 'fs86', 193)" class="i">Some</span> <span onmouseout="hideTip(event, 'fs88', 194)" onmouseover="showTip(event, 'fs88', 194)" class="i">user</span> <span class="k">-&gt;</span>
+        <span onmouseout="hideTip(event, 'fs65', 195)" onmouseover="showTip(event, 'fs65', 195)" class="i">web</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs70', 196)" onmouseover="showTip(event, 'fs70', 196)" class="i">Output</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs73', 197)" onmouseover="showTip(event, 'fs73', 197)" class="i">AddItem</span> <span class="s">&quot;</span><span class="s">&lt;</span><span class="s">strong</span><span class="s">&gt;</span><span class="s">%</span><span class="s">s</span><span class="s">&lt;</span><span class="s">/</span><span class="s">strong</span><span class="s">&gt;</span><span class="s">:</span><span class="s"> </span><span class="s">%</span><span class="s">s</span><span class="s">&quot;</span> <span onmouseout="hideTip(event, 'fs88', 198)" onmouseover="showTip(event, 'fs88', 198)" class="i">user</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs75', 199)" onmouseover="showTip(event, 'fs75', 199)" class="i">Name</span> <span class="i">text</span>
+    | _ <span class="k">-&gt;</span> ()  )
+<span onmouseout="hideTip(event, 'fs91', 200)" onmouseover="showTip(event, 'fs91', 200)" class="i">search</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs89', 201)" onmouseover="showTip(event, 'fs89', 201)" class="i">Start</span>()
+
+<span onmouseout="hideTip(event, 'fs91', 202)" onmouseover="showTip(event, 'fs91', 202)" class="i">search</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs90', 203)" onmouseover="showTip(event, 'fs90', 203)" class="i">Stop</span>()</pre>
+</td>
+</tr>
+</table>
+
+<div class="tip" id="fs1">namespace FSharp</div>
+<div class="tip" id="fs2">namespace FSharp.Data</div>
+<div class="tip" id="fs3">namespace FSharp.Data.Toolbox</div>
+<div class="tip" id="fs4">namespace FSharp.Data.Toolbox.Twitter</div>
+<div class="tip" id="fs5">val key : string<br /><br />Full name: TwitterProvider.key</div>
+<div class="tip" id="fs6">val secret : string<br /><br />Full name: TwitterProvider.secret</div>
+<div class="tip" id="fs7">val twitter : Twitter<br /><br />Full name: TwitterProvider.twitter</div>
+<div class="tip" id="fs8">Multiple items<br />type Twitter =<br />&#160;&#160;new : context:TwitterContext -&gt; Twitter<br />&#160;&#160;member RequestRawData : url:string * query:(string * string) list -&gt; string<br />&#160;&#160;member Connections : Connections<br />&#160;&#160;member Search : Search<br />&#160;&#160;member Streaming : Streaming<br />&#160;&#160;member Timelines : Timelines<br />&#160;&#160;member Users : Users<br />&#160;&#160;static member Authenticate : consumer_key:string * consumer_secret:string -&gt; TwitterConnector<br />&#160;&#160;static member AuthenticateAppOnly : consumer_key:string * consumer_secret:string -&gt; Twitter<br />&#160;&#160;static member TwitterWeb : unit -&gt; WebBrowser<br /><br />Full name: FSharp.Data.Toolbox.Twitter.Twitter<br /><br />--------------------<br />new : context:TwitterContext -&gt; Twitter</div>
+<div class="tip" id="fs9">static member Twitter.AuthenticateAppOnly : consumer_key:string * consumer_secret:string -&gt; Twitter</div>
+<div class="tip" id="fs10">val connector : TwitterConnector<br /><br />Full name: TwitterProvider.connector</div>
+<div class="tip" id="fs11">static member Twitter.Authenticate : consumer_key:string * consumer_secret:string -&gt; TwitterConnector</div>
+<div class="tip" id="fs12">abstract member TwitterConnector.Connect : string -&gt; Twitter</div>
+<div class="tip" id="fs13">val friends : FSharp.Data.JsonProvider&lt;...&gt;.Root<br /><br />Full name: TwitterProvider.friends</div>
+<div class="tip" id="fs14">property Twitter.Connections: Connections</div>
+<div class="tip" id="fs15">member Connections.FriendsIds : ?userId:int64 * ?screenName:string * ?cursor:int64 * ?count:int -&gt; FSharp.Data.JsonProvider&lt;...&gt;.Root</div>
+<div class="tip" id="fs16">val followers : FSharp.Data.JsonProvider&lt;...&gt;.Root<br /><br />Full name: TwitterProvider.followers</div>
+<div class="tip" id="fs17">member Connections.FollowerIds : ?userId:int64 * ?screenName:string * ?cursor:int64 * ?count:int -&gt; FSharp.Data.JsonProvider&lt;...&gt;.Root</div>
+<div class="tip" id="fs18">val printfn : format:Printf.TextWriterFormat&lt;&#39;T&gt; -&gt; &#39;T<br /><br />Full name: Microsoft.FSharp.Core.ExtraTopLevelOperators.printfn</div>
+<div class="tip" id="fs19">property FSharp.Data.JsonProvider&lt;...&gt;.Root.Ids: int64 []</div>
+<div class="tip" id="fs20">module Seq<br /><br />from Microsoft.FSharp.Collections</div>
+<div class="tip" id="fs21">val length : source:seq&lt;&#39;T&gt; -&gt; int<br /><br />Full name: Microsoft.FSharp.Collections.Seq.length</div>
+<div class="tip" id="fs22">val followersFSorg : FSharp.Data.JsonProvider&lt;...&gt;.Root<br /><br />Full name: TwitterProvider.followersFSorg</div>
+<div class="tip" id="fs23">val friendsFSorg : FSharp.Data.JsonProvider&lt;...&gt;.Root<br /><br />Full name: TwitterProvider.friendsFSorg</div>
+<div class="tip" id="fs24">val fs : FSharp.Data.JsonProvider&lt;...&gt;.Root<br /><br />Full name: TwitterProvider.fs</div>
+<div class="tip" id="fs25">member Connections.Friendship : ?sourceId:int64 * ?targetId:int64 -&gt; FSharp.Data.JsonProvider&lt;...&gt;.Root</div>
+<div class="tip" id="fs26">property FSharp.Data.JsonProvider&lt;...&gt;.Root.Relationship: FSharp.Data.JsonProvider&lt;...&gt;.Relationship</div>
+<div class="tip" id="fs27">property FSharp.Data.JsonProvider&lt;...&gt;.Relationship.Source: FSharp.Data.JsonProvider&lt;...&gt;.Source</div>
+<div class="tip" id="fs28">property FSharp.Data.JsonProvider&lt;...&gt;.Source.ScreenName: string</div>
+<div class="tip" id="fs29">property FSharp.Data.JsonProvider&lt;...&gt;.Relationship.Target: FSharp.Data.JsonProvider&lt;...&gt;.Target</div>
+<div class="tip" id="fs30">property FSharp.Data.JsonProvider&lt;...&gt;.Target.ScreenName: string</div>
+<div class="tip" id="fs31">property FSharp.Data.JsonProvider&lt;...&gt;.Source.Following: bool</div>
+<div class="tip" id="fs32">property FSharp.Data.JsonProvider&lt;...&gt;.Source.FollowedBy: bool</div>
+<div class="tip" id="fs33">val friendInfos : FSharp.Data.JsonProvider&lt;...&gt;.Root []<br /><br />Full name: TwitterProvider.friendInfos</div>
+<div class="tip" id="fs34">property Twitter.Users: Users</div>
+<div class="tip" id="fs35">member Users.Lookup : screenNames:seq&lt;string&gt; -&gt; FSharp.Data.JsonProvider&lt;...&gt;.Root []<br />member Users.Lookup : userIds:seq&lt;int64&gt; -&gt; FSharp.Data.JsonProvider&lt;...&gt;.Root []</div>
+<div class="tip" id="fs36">val truncate : count:int -&gt; source:seq&lt;&#39;T&gt; -&gt; seq&lt;&#39;T&gt;<br /><br />Full name: Microsoft.FSharp.Collections.Seq.truncate</div>
+<div class="tip" id="fs37">val friend : FSharp.Data.JsonProvider&lt;...&gt;.Root</div>
+<div class="tip" id="fs38">property FSharp.Data.JsonProvider&lt;...&gt;.Root.Name: string</div>
+<div class="tip" id="fs39">property FSharp.Data.JsonProvider&lt;...&gt;.Root.ScreenName: string</div>
+<div class="tip" id="fs40">property FSharp.Data.JsonProvider&lt;...&gt;.Root.Id: int64</div>
+<div class="tip" id="fs41">val fsharpTweets : FSharp.Data.JsonProvider&lt;...&gt;.Root<br /><br />Full name: TwitterProvider.fsharpTweets</div>
+<div class="tip" id="fs42">property Twitter.Search: Search</div>
+<div class="tip" id="fs43">member Search.Tweets : query:string * ?lang:string * ?geocode:string * ?locale:string * ?count:int * ?sinceId:int64 * ?maxId:int64 * ?until:string -&gt; FSharp.Data.JsonProvider&lt;...&gt;.Root</div>
+<div class="tip" id="fs44">val status : FSharp.Data.JsonProvider&lt;...&gt;.Status</div>
+<div class="tip" id="fs45">property FSharp.Data.JsonProvider&lt;...&gt;.Root.Statuses: FSharp.Data.JsonProvider&lt;...&gt;.Status []</div>
+<div class="tip" id="fs46">property FSharp.Data.JsonProvider&lt;...&gt;.Status.User: FSharp.Data.JsonProvider&lt;...&gt;.User</div>
+<div class="tip" id="fs47">property FSharp.Data.JsonProvider&lt;...&gt;.User.ScreenName: string</div>
+<div class="tip" id="fs48">property FSharp.Data.JsonProvider&lt;...&gt;.Status.Text: string</div>
+<div class="tip" id="fs49">val home : FSharp.Data.JsonProvider&lt;...&gt;.Root []<br /><br />Full name: TwitterProvider.home</div>
+<div class="tip" id="fs50">property Twitter.Timelines: Timelines</div>
+<div class="tip" id="fs51">member Timelines.HomeTimeline : unit -&gt; FSharp.Data.JsonProvider&lt;...&gt;.Root []</div>
+<div class="tip" id="fs52">val timeline : FSharp.Data.JsonProvider&lt;...&gt;.Root []<br /><br />Full name: TwitterProvider.timeline</div>
+<div class="tip" id="fs53">member Timelines.Timeline : screenName:string * ?count:int -&gt; FSharp.Data.JsonProvider&lt;...&gt;.Root []<br />member Timelines.Timeline : userId:int64 * ?count:int -&gt; FSharp.Data.JsonProvider&lt;...&gt;.Root []</div>
+<div class="tip" id="fs54">namespace System</div>
+<div class="tip" id="fs55">namespace System.Windows</div>
+<div class="tip" id="fs56">namespace System.Windows.Forms</div>
+<div class="tip" id="fs57">namespace FSharp.Control</div>
+<div class="tip" id="fs58">namespace FSharp.WebBrowser</div>
+<div class="tip" id="fs59">val frm : Form<br /><br />Full name: TwitterProvider.frm</div>
+<div class="tip" id="fs60">Multiple items<br />type Form =<br />&#160;&#160;inherit ContainerControl<br />&#160;&#160;new : unit -&gt; Form<br />&#160;&#160;member AcceptButton : IButtonControl with get, set<br />&#160;&#160;member Activate : unit -&gt; unit<br />&#160;&#160;member ActiveMdiChild : Form<br />&#160;&#160;member AddOwnedForm : ownedForm:Form -&gt; unit<br />&#160;&#160;member AllowTransparency : bool with get, set<br />&#160;&#160;member AutoScale : bool with get, set<br />&#160;&#160;member AutoScaleBaseSize : Size with get, set<br />&#160;&#160;member AutoScroll : bool with get, set<br />&#160;&#160;member AutoSize : bool with get, set<br />&#160;&#160;...<br />&#160;&#160;nested type ControlCollection<br /><br />Full name: System.Windows.Forms.Form<br /><br />--------------------<br />Form() : unit</div>
+<div class="tip" id="fs61">val btn : Button<br /><br />Full name: TwitterProvider.btn</div>
+<div class="tip" id="fs62">Multiple items<br />type Button =<br />&#160;&#160;inherit ButtonBase<br />&#160;&#160;new : unit -&gt; Button<br />&#160;&#160;member AutoSizeMode : AutoSizeMode with get, set<br />&#160;&#160;member DialogResult : DialogResult with get, set<br />&#160;&#160;member NotifyDefault : value:bool -&gt; unit<br />&#160;&#160;member PerformClick : unit -&gt; unit<br />&#160;&#160;member ToString : unit -&gt; string<br />&#160;&#160;event DoubleClick : EventHandler<br />&#160;&#160;event MouseDoubleClick : MouseEventHandler<br /><br />Full name: System.Windows.Forms.Button<br /><br />--------------------<br />Button() : unit</div>
+<div class="tip" id="fs63">type DockStyle =<br />&#160;&#160;| None = 0<br />&#160;&#160;| Top = 1<br />&#160;&#160;| Bottom = 2<br />&#160;&#160;| Left = 3<br />&#160;&#160;| Right = 4<br />&#160;&#160;| Fill = 5<br /><br />Full name: System.Windows.Forms.DockStyle</div>
+<div class="tip" id="fs64">field DockStyle.Top = 1</div>
+<div class="tip" id="fs65">val web : WebBrowser<br /><br />Full name: TwitterProvider.web</div>
+<div class="tip" id="fs66">Multiple items<br />type WebBrowser =<br />&#160;&#160;inherit WebBrowserBase<br />&#160;&#160;new : unit -&gt; WebBrowser<br />&#160;&#160;member AllowNavigation : bool with get, set<br />&#160;&#160;member AllowWebBrowserDrop : bool with get, set<br />&#160;&#160;member CanGoBack : bool<br />&#160;&#160;member CanGoForward : bool<br />&#160;&#160;member Document : HtmlDocument<br />&#160;&#160;member DocumentStream : Stream with get, set<br />&#160;&#160;member DocumentText : string with get, set<br />&#160;&#160;member DocumentTitle : string<br />&#160;&#160;member DocumentType : string<br />&#160;&#160;...<br /><br />Full name: System.Windows.Forms.WebBrowser<br /><br />--------------------<br />WebBrowser() : unit</div>
+<div class="tip" id="fs67">field DockStyle.Fill = 5</div>
+<div class="tip" id="fs68">property Control.Controls: Control.ControlCollection</div>
+<div class="tip" id="fs69">Control.ControlCollection.Add(value: Control) : unit</div>
+<div class="tip" id="fs70">property WebBrowser.Output: WebBrowserOutput</div>
+<div class="tip" id="fs71">member WebBrowserOutput.StartList : unit -&gt; unit<br />member WebBrowserOutput.StartList : f:Printf.StringFormat&lt;&#39;a0,unit&gt; -&gt; &#39;a0</div>
+<div class="tip" id="fs72">val tweet : FSharp.Data.JsonProvider&lt;...&gt;.Root</div>
+<div class="tip" id="fs73">member WebBrowserOutput.AddItem : f:Printf.StringFormat&lt;&#39;a0,unit&gt; -&gt; &#39;a0</div>
+<div class="tip" id="fs74">property FSharp.Data.JsonProvider&lt;...&gt;.Root.User: FSharp.Data.JsonProvider&lt;...&gt;.User</div>
+<div class="tip" id="fs75">property FSharp.Data.JsonProvider&lt;...&gt;.User.Name: string</div>
+<div class="tip" id="fs76">property FSharp.Data.JsonProvider&lt;...&gt;.Root.Text: string</div>
+<div class="tip" id="fs77">val sample : TwitterStream&lt;FSharp.Data.JsonProvider&lt;...&gt;.Root&gt;<br /><br />Full name: TwitterProvider.sample</div>
+<div class="tip" id="fs78">property Twitter.Streaming: Streaming</div>
+<div class="tip" id="fs79">member Streaming.SampleTweets : unit -&gt; TwitterStream&lt;FSharp.Data.JsonProvider&lt;...&gt;.Root&gt;</div>
+<div class="tip" id="fs80">property TwitterStream.TweetReceived: IEvent&lt;FSharp.Data.JsonProvider&lt;...&gt;.Root&gt;</div>
+<div class="tip" id="fs81">Multiple items<br />module Observable<br /><br />from FSharp.Control<br /><br />--------------------<br />module Observable<br /><br />from Microsoft.FSharp.Control</div>
+<div class="tip" id="fs82">val guiSubscribe : f:(&#39;a -&gt; unit) -&gt; obs:System.IObservable&lt;&#39;a&gt; -&gt; System.IDisposable<br /><br />Full name: FSharp.Control.Observable.guiSubscribe</div>
+<div class="tip" id="fs83">val status : FSharp.Data.JsonProvider&lt;...&gt;.Root</div>
+<div class="tip" id="fs84">property FSharp.Data.JsonProvider&lt;...&gt;.Root.Text: Option&lt;string&gt;</div>
+<div class="tip" id="fs85">property FSharp.Data.JsonProvider&lt;...&gt;.Root.User: Option&lt;FSharp.Data.JsonProvider&lt;...&gt;.User&gt;</div>
+<div class="tip" id="fs86">union case Option.Some: Value: &#39;T -&gt; Option&lt;&#39;T&gt;</div>
+<div class="tip" id="fs87">val text : string</div>
+<div class="tip" id="fs88">val user : FSharp.Data.JsonProvider&lt;...&gt;.User</div>
+<div class="tip" id="fs89">abstract member TwitterStream.Start : unit -&gt; unit</div>
+<div class="tip" id="fs90">abstract member TwitterStream.Stop : unit -&gt; unit</div>
+<div class="tip" id="fs91">val search : TwitterStream&lt;FSharp.Data.JsonProvider&lt;...&gt;.Root&gt;<br /><br />Full name: TwitterProvider.search</div>
+<div class="tip" id="fs92">member Streaming.FilterTweets : keywords:seq&lt;string&gt; -&gt; TwitterStream&lt;FSharp.Data.JsonProvider&lt;...&gt;.Root&gt;</div>
+
+        </div>
+        <div class="span3">
+          <img src="/FSharp.Data.Toolbox/img/logo.png" alt="F# Project" style="width:150px;margin:10px" />  
+          <ul class="nav nav-list" id="menu" style="margin-top: 20px;">
+            <li class="nav-header">F# Data Toolbox</li>
+            <li><a href="/FSharp.Data.Toolbox/index.html">Home page</a></li>
+            <li class="divider"></li>
+            <li><a href="http://nuget.com/packages/FSharp.Data.Toolbox">Get Library via NuGet</a></li>
+            <li><a href="http://github.com/fsprojects/FSharp.Data.Toolbox">Source Code on GitHub</a></li>
+            <li><a href="http://github.com/fsprojects/FSharp.Data.Toolbox/blob/master/LICENSE.txt">License</a></li>
+            <li><a href="http://github.com/fsprojects/FSharp.Data.Toolbox/blob/master/RELEASE_NOTES.md">Release Notes</a></li>
+            
+            <li class="nav-header">Getting started</li>
+            <li><a href="/FSharp.Data.Toolbox/TwitterProvider.html">Twitter Type provider</a></li>
+
+            <li class="nav-header">Documentation</li>
+            <li><a href="/FSharp.Data.Toolbox/reference/index.html">API Reference</a><br />(Work in progress)</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+    <a href="http://github.com/fsprojects/FSharp.Data.Toolbox"><img style="position: absolute; top: 0; right: 0; border: 0;" src="https://s3.amazonaws.com/github/ribbons/forkme_right_gray_6d6d6d.png" alt="Fork me on GitHub"></a>
+  </body>
+  </html>
