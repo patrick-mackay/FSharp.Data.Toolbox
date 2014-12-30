@@ -55,11 +55,15 @@ After registration, Twitter provides API key and API secret
 <span class="l">4: </span>
 <span class="l">5: </span>
 <span class="l">6: </span>
+<span class="l">7: </span>
+<span class="l">8: </span>
 </pre>
 </td>
 <td class="snippet"><pre class="fssnip">
-<span class="prep">#r</span> <span class="s">&quot;</span><span class="s">FSharp</span><span class="s">.</span><span class="s">Data</span><span class="s">.</span><span class="s">dll</span><span class="s">&quot;</span>
+<span class="c">// The Twitter reference needs to come before FSharp.Data.dll</span>
+<span class="c">// (see the big warning box below for more!)</span>
 <span class="prep">#r</span> <span class="s">&quot;</span><span class="s">FSharp</span><span class="s">.</span><span class="s">Data</span><span class="s">.</span><span class="s">Toolbox</span><span class="s">.</span><span class="s">Twitter</span><span class="s">.</span><span class="s">dll</span><span class="s">&quot;</span>
+<span class="prep">#r</span> <span class="s">&quot;</span><span class="s">FSharp</span><span class="s">.</span><span class="s">Data</span><span class="s">.</span><span class="s">dll</span><span class="s">&quot;</span>
 <span class="k">open</span> <span onmouseout="hideTip(event, 'fs1', 1)" onmouseover="showTip(event, 'fs1', 1)" class="i">FSharp</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs2', 2)" onmouseover="showTip(event, 'fs2', 2)" class="i">Data</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs3', 3)" onmouseover="showTip(event, 'fs3', 3)" class="i">Toolbox</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs4', 4)" onmouseover="showTip(event, 'fs4', 4)" class="i">Twitter</span>
 
 <span class="k">let</span> <span onmouseout="hideTip(event, 'fs5', 5)" onmouseover="showTip(event, 'fs5', 5)" class="i">key</span> <span class="o">=</span> <span class="s">&quot;</span><span class="s">mKQL29XNemjQbLlQ8t0pBg</span><span class="s">&quot;</span>
@@ -67,6 +71,19 @@ After registration, Twitter provides API key and API secret
 </td>
 </tr>
 </table>
+
+<div class="well well-small" style="margin:0px 70px 0px 20px;">
+
+<p><strong>WARNING</strong>: To make the Twitter type provider work correctly in F# Interactive,
+you need to reference <code>FSharp.Data.Toolbox.Twitter.dll</code> <em>before</em> referencing <code>FSharp.Data.dll</code> 
+as on the first two lines above.</p>
+
+<p>This is required so that the JSON type provider (used in F# Data Toolbox) can locate sample
+JSON files from the embedded metadata of the <code>FSharp.Data.Toolbox.Twitter.dll</code> assembly. An
+alternative is to copy the <a href="https://github.com/fsprojects/FSharp.Data.Toolbox/tree/master/src/FSharp.Data.Toolbox.Twitter/json">sample JSON files</a>
+together with the assembly.</p>
+
+</p></div>
 
 <p>There are two types of possible connections to Twitter,
 application-only and full OAuth authentication. They provide 
