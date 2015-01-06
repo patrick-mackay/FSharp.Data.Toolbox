@@ -93,6 +93,8 @@ correctly in F# Interactive, you need to:</p>
 (rather than usign <code>#r</code> with a full relative path)</p></li>
 <li><p>Reference <code>FSharp.Data.Toolbox.Twitter.dll</code> <em>before</em> referencing <code>FSharp.Data.dll</code> 
 as on the first two lines above.</p></li>
+<li><p>If you are using the Twitter provider in a compiled project, you will also need
+to add reference to <code>System.Windows.Forms</code>.</p></li>
 </ul>
 
 <p>This second point is required so that the JSON type provider (used in F# Data Toolbox) can locate 
